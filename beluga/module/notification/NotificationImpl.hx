@@ -12,7 +12,7 @@ class NotificationImpl extends ModuleImpl implements NotificationInternal {
 	public function new() {
 		super();
 	}
-	
+
 	override public function loadConfig(data : Fast) {
 	}
 

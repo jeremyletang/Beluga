@@ -3,6 +3,7 @@ package beluga.module.ticket;
 // Beluga core
 import beluga.core.module.ModuleImpl;
 import beluga.core.Beluga;
+import beluga.core.macro.MetadataReader;
 
 // Beluga mods
 import beluga.module.account.model.User;
@@ -96,6 +97,7 @@ class TicketImpl extends ModuleImpl implements TicketInternal {
         };
     }
 
+    // @btrigger("beluga_ticket_create")
     public static function _create(): Void {
         Beluga.getInstance().getModuleInstance(Ticket).create();
     }

@@ -7,6 +7,7 @@ import beluga.core.BelugaException;
 
 // Beluga mods
 import beluga.module.ticket.Ticket;
+import beluga.module.ticket.TicketImpl;
 
 // Haxe
 import haxe.web.Dispatch;
@@ -39,6 +40,7 @@ class TicketApi {
     }
 
     public function doCreate(): Void {
+        // TicketImpl._create();
         beluga.triggerDispatcher.dispatch("beluga_ticket_create");
     }
 

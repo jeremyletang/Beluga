@@ -17,11 +17,11 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 	public function new() {
 		super();
 	}
-	
+
 	override public function loadConfig(data : Fast) {
-		
+
 	}
-	
+
 	public static function _redirect() {
 		Beluga.getInstance().getModuleInstance(Survey).redirect();
 	}
@@ -65,7 +65,7 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 			var tmp_v = new SurveyData();
 
 			tmp_v.m_survey = tmp;
-			
+
 			for (tmp_c in Choice.manager.dynamicSearch( { survey_id : tmp.id } ))
 				tmp_v.m_choices.push(tmp_c);
 			for (tmp_c in Result.manager.dynamicSearch( { survey_id : tmp.id, user_id : user.id } ))
@@ -79,7 +79,7 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 	public static function _print(args : {id : Int}) {
 		Beluga.getInstance().getModuleInstance(Survey).print(args);
 	}
-	
+
 	public function print(args : {id : Int}) {
 		for (tmp in SurveyModel.manager.dynamicSearch( {id : args.id} )) {
 			beluga.triggerDispatcher.dispatch("beluga_survey_printx", [{survey : tmp}]);
@@ -108,19 +108,19 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 	}) {
 		Beluga.getInstance().getModuleInstance(Survey).create(args);
 	}
-	
+
 	public function create(args : {
 		title : String,
 		description : String,
 		choices : Array<String>
 	}) {
 		var user = Beluga.getInstance().getModuleInstance(Account).getLoggedUser();
-		
+
 		if (user == null || args.choices == null || args.choices.length < 2 || args.title == "") {
 			beluga.triggerDispatcher.dispatch("beluga_survey_create_fail", []);
 			return;
 		}
-		
+
 		var tmp_choices = new Array<String>();
 
 		if (args.choices != null)
@@ -139,26 +139,26 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 		survey.author_id = user.id;
 		survey.description = args.description;
 		survey.multiple_choice = args.choices != null ? args.choices.length : 0;
-		
+
 		survey.insert();
 		for (tmp in tmp_choices) {
 			var c = new Choice();
-			
+
 			c.label = tmp;
 			c.survey_id = survey.id;
 			c.insert();
 		}
-		
+
 		beluga.triggerDispatcher.dispatch("beluga_survey_create_success", []);
 	}
-	
+
 	public static function _vote(args : {
 		id : Int,
 		option : Int
 	}) {
 		Beluga.getInstance().getModuleInstance(Survey).vote(args);
 	}
-	
+
 	public function vote(args : {
 		id : Int,
 		option : Int
@@ -184,18 +184,17 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
 		res.user_id = user.id;
 		res.choice_id = args.option;
 		res.insert();
-		
+
 		var notify = {
 			title: "New answer to your survey !",
-			text: user.login + " has just answer to your survey " + survey.name + 
+			text: user.login + " has just answer to your survey " + survey.name +
 			" <a href=\"/beluga/survey/print?id=" + survey.id + "\">See</a>.",
 			user_id: survey.author_id
 		};
-
-		beluga.triggerDispatcher.dispatch("beluga_survey_answer_notify", [notify]); 
 		beluga.triggerDispatcher.dispatch("beluga_survey_vote_success", []);
+		beluga.triggerDispatcher.dispatch("beluga_survey_answer_notify", [notify]);
 	}
-	
+
 
 	public function canVote(args : {id : Int}) : Bool {
 		var user = Beluga.getInstance().getModuleInstance(Account).getLoggedUser();
