@@ -40,10 +40,6 @@ class SurveyApi {
         module.vote({survey_id: args.id, option: args.option});
     }
 
-    public function doPrint(args : {id : Int}) {
-        module.print({survey_id: args.id});
-    }
-
     public function doDefault() {
         module.triggers.defaultSurvey.dispatch();
     }

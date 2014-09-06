@@ -77,13 +77,6 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
         return m_surveys;
     }
 
-    public function print(args : {survey_id : Int}) {
-        for (tmp in SurveyModel.manager.dynamicSearch( {id : args.survey_id} )) {
-            this.triggers.printSurvey.dispatch({survey: tmp});
-            return;
-        }
-    }
-
     public function getChoices(args : {survey_id : Int}) : Array<Choice> {
         var user = Beluga.getInstance().getModuleInstance(Account).loggedUser;
         var arr = new Array<Choice>();
@@ -146,34 +139,34 @@ class SurveyImpl extends ModuleImpl implements SurveyInternal {
     }) {
         var user = Beluga.getInstance().getModuleInstance(Account).loggedUser;
         if (user == null) {
-            this.redirect();
+            this.triggers.voteFail.dispatch({err: "You have to be logged to vote !"});
             return;
         }
 
         for (tmp in Result.manager.search( { survey_id : args.survey_id, user_id : user.id } )) {
-            this.triggers.voteFail.dispatch();
+            this.triggers.voteFail.dispatch({err: "You already has voted for this survey"});
             return;
         }
 
-        var survey : SurveyModel;
+        for (survey in SurveyModel.manager.dynamicSearch( {id : args.survey_id} )) {
+            var res = new Result();
 
-        for (tmp in SurveyModel.manager.dynamicSearch( {id : args.survey_id} ))
-            survey = tmp;
-        var res = new Result();
+            res.survey_id = survey.id;
+            res.user_id = user.id;
+            res.choice_id = args.option;
+            res.insert();
 
-        res.survey_id = survey.id;
-        res.user_id = user.id;
-        res.choice_id = args.option;
-        res.insert();
-
-        var notify = {
-            title: "New answer to your survey !",
-            text: user.login + " has just answer to your survey " + survey.name +
-            " <a href=\"/beluga/survey/print?id=" + survey.id + "\">See</a>.",
-            user_id: survey.author_id
-        };
-        this.triggers.answerNotify.dispatch(notify);
-        this.triggers.voteSuccess.dispatch();
+            var notify = {
+                title: "New answer to your survey !",
+                text: user.login + " has just answer to your survey " + survey.name +
+                " <a href=\"/beluga/survey/print?id=" + survey.id + "\">See</a>.",
+                user_id: survey.author_id
+            };
+            this.triggers.answerNotify.dispatch(notify);
+            this.triggers.voteSuccess.dispatch();
+            return;
+        }
+        this.triggers.voteFail.dispatch({err: "Survey not found"});
     }
 
 

@@ -24,5 +24,4 @@ interface Survey extends Module {
     public function delete(args : {survey_id : Int}) : Void;
     public function getChoices(args : {survey_id : Int}) : Array<Choice>;
     public function getResults(args : {survey_id : Int}) : Array<Dynamic>;
-    public function print(args : {survey_id : Int}): Void;
 }
