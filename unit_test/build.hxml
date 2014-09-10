@@ -1,0 +1,6 @@
+-php bin
+-main Main
+-lib hunit
+-lib beluga
+-lib tink_macro
+-lib tink_core

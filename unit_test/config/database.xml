@@ -1,0 +1,8 @@
+<database>
+	<host>localhost</host>
+	<!-- <port></port> -->
+	<user>root</user>
+	<pass>root</pass>
+	<database>beluga_tu</database>
+	<!-- <socket></socket> -->
+</database>
