@@ -21,17 +21,17 @@ class TestTicket implements HUnitTest {
     @before_class
     public function beforeClass() {
         beluga = Beluga.getInstance();
-        account = beluga.getModuleInstance(Account);
-        account.subscribe({login: "test", password: "test", password_conf: "test", email: "test"});
-        account.login({login: "test", password: "test"});
+        // account = beluga.getModuleInstance(Account);
+        // account.subscribe({login: "friend", password: "friend", password_conf: "friend", email: "friend"});
+        // account.login({login: "test", password: "test"});
     }
 
     @after_class
     public function afterClass() {
-        var user_id = {id: account.loggedUser.id};
-        account.logout();
-        account.deleteUser(user_id);
-        beluga.cleanup();
+        // var user_id = {id: account.loggedUser.id};
+        // account.logout();
+        // account.deleteUser(user_id);
+        // beluga.cleanup();
     }
 
     @before
