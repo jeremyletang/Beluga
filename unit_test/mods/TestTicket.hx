@@ -15,29 +15,57 @@ class TestTicket implements HUnitTest {
     public var ticket: Ticket;
     public var account: Account;
     public static var beluga: Beluga;
+    public var ticket_id: Int;
 
     public function new() {}
 
     @before_class
     public function beforeClass() {
         beluga = Beluga.getInstance();
-        // account = beluga.getModuleInstance(Account);
-        // account.subscribe({login: "friend", password: "friend", password_conf: "friend", email: "friend"});
-        // account.login({login: "test", password: "test"});
+        ticket = beluga.getModuleInstance(Ticket);
+        account = beluga.getModuleInstance(Account);
+        account.subscribe({login: "test", password: "test", password_conf: "test", email: "test"});
+        account.login({login: "test", password: "test"});
     }
 
     @after_class
     public function afterClass() {
-        // var user_id = {id: account.loggedUser.id};
-        // account.logout();
-        // account.deleteUser(user_id);
-        // beluga.cleanup();
+        var user_id = {id: account.loggedUser.id};
+        account.logout();
+        account.deleteUser(user_id);
+        beluga.cleanup();
     }
 
     @before
     public function beforeTest() {
         ticket = beluga.getModuleInstance(Ticket);
     }
+
+    @test
+    public function canSubmitANewTicketWithAllValidDatas() {
+        ticket.triggers.show.add(this.submitTicketSuccess);
+        // ticket.triggers.create.add(this.submitTicketFail);
+        ticket.submit({ title: "new_ticket", message: "msg", assignee: "test" });
+    }
+
+    // @test
+    // @should_fail
+    // public function cannotSubmitANewTicketWithMissingDatas() {
+    //     ticket.triggers.show.add(this.submitTicketSuccess);
+    //     // ticket.triggers.create.add(this.submitTicketFail);
+    //     ticket.submit({ title: "", message: "", assignee: "" });
+    // }
+    public function submitTicketSuccess() { this.ticket_id = ticket.show_id; }
+    // public function submitTicketFail() { Assert.fail2(); }
+
+    @test
+    public function canAddALabel() {
+        ticket.triggers.addLabelSuccess.add(this.canAddLabelSuccess);
+        // ticket.triggers.addLabelFail.add(this.canAddLabelFail);
+        ticket.addlabel({name: "new_label"});
+    }
+    public function canAddLabelSuccess() {}
+    // public function canAddLabelFail() { Assert.fail2(); }
 
     @test
     public function testBrowseTrigger() {
@@ -52,13 +80,6 @@ class TestTicket implements HUnitTest {
         this.ticket.triggers.show.dispatch();
     }
     public function catchShow() {}
-
-    @test
-    public function testCreateTrigger() {
-        this.ticket.triggers.create.add(this.catchCreate);
-        this.ticket.triggers.create.dispatch();
-    }
-    public function catchCreate() {}
 
     @test
     public function testAdminTrigger() {
