@@ -32,9 +32,9 @@ class TestSurvey implements HUnitTest {
     @test
     public function testDeleteFailTrigger() {
         this.survey.triggers.deleteFail.add(this.catchDeleteFail);
-        this.survey.triggers.deleteFail.dispatch();
+        this.survey.triggers.deleteFail.dispatch({ error : beluga.module.survey.SurveyErrorKind });
     }
-    public function catchDeleteFail() {}
+    public function catchDeleteFail(args: { error : beluga.module.survey.SurveyErrorKind }) {}
 
     @test
     public function testDeleteSuccessTrigger() {

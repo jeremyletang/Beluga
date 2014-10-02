@@ -7,6 +7,7 @@ import hunit.HUnitTest;
 import beluga.core.Beluga;
 import beluga.module.ticket.Ticket;
 import beluga.module.account.Account;
+import beluga.module.ticket.TicketErrorKind;
 
 import php.Lib;
 import sys.db.Types;
@@ -55,7 +56,7 @@ class TestTicket implements HUnitTest {
     //     // ticket.triggers.create.add(this.submitTicketFail);
     //     ticket.submit({ title: "", message: "", assignee: "" });
     // }
-    public function submitTicketSuccess() { this.ticket_id = ticket.show_id; }
+    public function submitTicketSuccess() {  }
     // public function submitTicketFail() { Assert.fail2(); }
 
     @test
@@ -91,9 +92,9 @@ class TestTicket implements HUnitTest {
     @test
     public function testDeleteLabelFailTrigger() {
         this.ticket.triggers.deleteLabelFail.add(this.catchDeleteLabelFail);
-        this.ticket.triggers.deleteLabelFail.dispatch();
+        this.ticket.triggers.deleteLabelFail.dispatch({error: TicketUserNotLogged});
     }
-    public function catchDeleteLabelFail() {}
+    public function catchDeleteLabelFail(args: { error : beluga.module.ticket.TicketErrorKind }) {}
 
     @test
     public function testDeleteLabelSuccessTrigger() {
@@ -105,9 +106,9 @@ class TestTicket implements HUnitTest {
     @test
     public function testAddLabelFailTrigger() {
         this.ticket.triggers.addLabelFail.add(this.catchAddLabelFail);
-        this.ticket.triggers.addLabelFail.dispatch();
+        this.ticket.triggers.addLabelFail.dispatch({error: TicketUserNotLogged});
     }
-    public function catchAddLabelFail() {}
+    public function catchAddLabelFail(args: { error : beluga.module.ticket.TicketErrorKind }) {}
 
     @test
     public function testAddLabelSuccessTrigger() {

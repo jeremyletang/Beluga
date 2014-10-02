@@ -6,6 +6,7 @@ import hunit.HUnitTest;
 
 import beluga.core.Beluga;
 import beluga.module.wallet.Wallet;
+import beluga.module.wallet.WalletErrorKind;
 
 import php.Lib;
 import sys.db.Types;
@@ -46,9 +47,9 @@ class TestWallet implements HUnitTest {
     @test
     public function testCurrencyCreationFailTigger() {
         this.wallet.triggers.currencyCreationFail.add(this.catchCurrencyCreationFail);
-        this.wallet.triggers.currencyCreationFail.dispatch();
+        this.wallet.triggers.currencyCreationFail.dispatch({error: UserNotAuthenticate});
     }
-    public function catchCurrencyCreationFail() {}
+    public function catchCurrencyCreationFail(args: { error : beluga.module.wallet.WalletErrorKind }) {}
 
     @test
     public function testCurrencyRemoveSuccessTigger() {
@@ -60,9 +61,9 @@ class TestWallet implements HUnitTest {
     @test
     public function testCurrencyRemovenFailTigger() {
         this.wallet.triggers.currencyRemoveFail.add(this.catchCurrencyRemoveFail);
-        this.wallet.triggers.currencyRemoveFail.dispatch();
+        this.wallet.triggers.currencyRemoveFail.dispatch({error: UserNotAuthenticate});
     }
-    public function catchCurrencyRemoveFail() {}
+    public function catchCurrencyRemoveFail(args: { error : beluga.module.wallet.WalletErrorKind }) {}
 
      @test
     public function testSetSiteCurrencySuccessTigger() {
