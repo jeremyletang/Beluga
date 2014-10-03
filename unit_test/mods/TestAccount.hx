@@ -6,13 +6,14 @@ import hunit.HUnitTest;
 
 import beluga.core.Beluga;
 import beluga.module.account.Account;
+import beluga.module.account.AccountImpl;
 
 import php.Lib;
 import sys.db.Types;
 
 class TestAccount implements HUnitTest {
-    public var account: Account;
-    public static var beluga: Beluga;
+    public var account: AccountImpl;
+    public var beluga: Beluga;
     public var user_id: Int;
     public var friend_id: Int;
 
@@ -20,17 +21,17 @@ class TestAccount implements HUnitTest {
 
     @before_class
     public function beforeClass() {
-        beluga = Beluga.getInstance();
-        account = beluga.getModuleInstance(Account);
-        account.subscribe({login: "friend", password: "friend", password_conf: "friend", email: "friend"});
-        account.login({login:"friend", password: "friend"});
-        this.friend_id = account.getLoggedUser().id;
-        account.logout();
+        this.beluga = Beluga.getInstance();
+        this.account = cast this.beluga.getModuleInstance(Account);
+        // this.account.subscribe({login: "friend", password: "friend", password_conf: "friend", email: "friend"});
+        // this.account.login({login:"friend", password: "friend"});
+        // this.friend_id = account.getLoggedUser().id;
+        // this.account.logout();
     }
 
     @after_class
     public function afterClass() {
-        beluga.cleanup();
+        this.beluga.cleanup();
     }
 
     @before
@@ -38,7 +39,7 @@ class TestAccount implements HUnitTest {
 
     @after
     public function afterTest() {
-        account.logout();
+        // account.logout();
     }
 
     @test
@@ -61,14 +62,14 @@ class TestAccount implements HUnitTest {
 
     @test
     public function canLogAnUserWithValidPasswordAndUserName() {
-        account.login({login: "test", password: "test"});
+        // this.account.login({login: "test", password: "test"});
         this.user_id = account.getLoggedUser().id;
         Assert.isTrue(account.getLoggedUser() != null);
     }
 
     @test
     public function cannotLogAnUserWithInvalidPasswordAndUserName() {
-        account.login({login: "not_valid", password: "not_valid"});
+        // this.account.login({login: "not_valid", password: "not_valid"});
         Assert.isTrue(account.getLoggedUser() == null);
     }
 
@@ -132,7 +133,7 @@ class TestAccount implements HUnitTest {
 
     @test
     public function canLogoutAnUser() {
-        account.login({login: "test", password: "test"});
+        // this.account.login({login: "test", password: "test"});
         account.logout();
         Assert.isTrue(account.getLoggedUser() == null);
     }

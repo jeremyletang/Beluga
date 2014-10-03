@@ -34,7 +34,7 @@ class TestTicket implements HUnitTest {
         var user_id = {id: account.loggedUser.id};
         account.logout();
         account.deleteUser(user_id);
-        beluga.cleanup();
+        // beluga.cleanup();
     }
 
     @before

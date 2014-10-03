@@ -57,11 +57,10 @@ class TestNews implements HUnitTest {
     @test
     public function testEditFailTrigger() {
         this.news.triggers.editFail.add(this.catchEditFail);
-        this.news.triggers.editFail.dispatch({news_id: 2, error: "err"});
+        this.news.triggers.editFail.dispatch({news_id: 2});
     }
-    public function catchEditFail(args: {news_id: Int, error: String}) {
+    public function catchEditFail(args: {news_id: Int}) {
         Assert.eq(args.news_id, 2);
-        Assert.eq(args.error, "err");
     }
 
     @test
@@ -76,17 +75,16 @@ class TestNews implements HUnitTest {
     @test
     public function testAddCommentFailTrigger() {
         this.news.triggers.addCommentFail.add(this.catchAddCommentFail);
-        this.news.triggers.addCommentFail.dispatch({news_id: 2, error: "err"});
+        this.news.triggers.addCommentFail.dispatch({news_id: 2});
     }
-    public function catchAddCommentFail(args: {news_id: Int, error: String}) {
+    public function catchAddCommentFail(args: {news_id: Int}) {
         Assert.eq(args.news_id, 2);
-        Assert.eq(args.error, "err");
     }
 
     @test
     public function testAddCommentSuccessTrigger() {
         this.news.triggers.addCommentSuccess.add(this.catchAddCommentSuccess);
-        this.news.triggers.addCommentSuccess.dispatch({news_id: 2 });
+        this.news.triggers.addCommentSuccess.dispatch({news_id: 2});
     }
     public function catchAddCommentSuccess(args: {news_id: Int}) {
         Assert.eq(args.news_id, 2);
@@ -104,11 +102,10 @@ class TestNews implements HUnitTest {
     @test
     public function testDeleteCommentFailTrigger() {
         this.news.triggers.deleteCommentFail.add(this.catchDeleteCommentFail);
-        this.news.triggers.deleteCommentFail.dispatch({news_id: 2, error: "err"});
+        this.news.triggers.deleteCommentFail.dispatch({news_id: 2});
     }
-    public function catchDeleteCommentFail(args: {news_id: Int, error: String}) {
+    public function catchDeleteCommentFail(args: {news_id: Int}) {
         Assert.eq(args.news_id, 2);
-        Assert.eq(args.error, "err");
     }
 
     @test
@@ -121,18 +118,15 @@ class TestNews implements HUnitTest {
     @test
     public function testDeleteFailTrigger() {
         this.news.triggers.deleteFail.add(this.catchDeleteFail);
-        this.news.triggers.deleteFail.dispatch();
+        this.news.triggers.deleteFail.dispatch({news_id: 2});
     }
-    public function catchDeleteFail() {}
+    public function catchDeleteFail(args: {news_id: Int}) {}
 
     @test
     public function testCreateFailTrigger() {
         this.news.triggers.createFail.add(this.catchCreateFail);
-        this.news.triggers.createFail.dispatch({title: "Title", data: "data", error: "err"});
+        this.news.triggers.createFail.dispatch();
     }
-    public function catchCreateFail(args: {title: String, data: String, error: String}) {
-        Assert.eq(args.title, "Title");
-        Assert.eq(args.data, "data");
-        Assert.eq(args.error, "err");
+    public function catchCreateFail() {
     }
 }
