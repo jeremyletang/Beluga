@@ -1,6 +1,9 @@
+-cp .
 -php bin
 -main Main
 -lib hunit
+-lib beluga-core
 -lib beluga
 -lib tink_macro
 -lib tink_core
+-lib session

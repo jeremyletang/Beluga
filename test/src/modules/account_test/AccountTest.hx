@@ -29,7 +29,11 @@ class AccountTest {
     public var acc(default, null) : Account;
 
     public function new(beluga : Beluga) {
-        this.beluga = beluga;
+        try {
+            this.beluga = beluga;
+        } catch (e: BelugaException) {
+            trace(e);
+        }
         this.acc = beluga.getModuleInstance(Account);
         acc.triggers.loginFail.add(this.loginFail);
         acc.triggers.loginSuccess.redirect("/"); //Equivalent to acc.triggers.loginSuccess.add(Beluga.redirect.bind("/"));

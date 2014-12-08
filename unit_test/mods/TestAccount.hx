@@ -4,34 +4,35 @@ import hunit.Assert;
 import hunit.AssertException;
 import hunit.HUnitTest;
 
-import beluga.core.Beluga;
+import beluga.Beluga;
 import beluga.module.account.Account;
-import beluga.module.account.AccountImpl;
+import beluga.module.account.model.User;
 
 import php.Lib;
 import sys.db.Types;
+import php.Web;
 
 class TestAccount implements HUnitTest {
-    public var account: AccountImpl;
-    public var beluga: Beluga;
-    public var user_id: Int;
-    public var friend_id: Int;
+    public static var beluga: Beluga;
+    public var account: Account;
+    public var user: User;
+    public var friend: User;
 
     public function new() {}
 
     @before_class
     public function beforeClass() {
-        this.beluga = Beluga.getInstance();
-        this.account = cast this.beluga.getModuleInstance(Account);
-        // this.account.subscribe({login: "friend", password: "friend", password_conf: "friend", email: "friend"});
-        // this.account.login({login:"friend", password: "friend"});
-        // this.friend_id = account.getLoggedUser().id;
-        // this.account.logout();
+        beluga = Beluga.getInstance();
+        this.account = Beluga.getInstance().getModuleInstance(Account);
+        this.account.subscribe({login: "friend", password: "friend1234", password_conf: "friend1234", email: "friend@friend.com"});
+        this.account.login({login:"friend", password: "friend1234"});
+        this.friend = account.getLoggedUser();
+        this.account.logout();
     }
 
     @after_class
     public function afterClass() {
-        this.beluga.cleanup();
+        // beluga.cleanup();
     }
 
     @before
@@ -39,14 +40,16 @@ class TestAccount implements HUnitTest {
 
     @after
     public function afterTest() {
-        // account.logout();
+        account.logout();
     }
 
     @test
     public function canCreateAnAccountWithValidsDatas() {
-        account.triggers.subscribeSuccess.add(this.canCreateAnAccountSuccess);
-        account.triggers.subscribeFail.add(this.canCreateAnAccountFail);
-        account.subscribe({login: "test", password: "test", password_conf: "test", email: "test"});
+        this.account = Beluga.getInstance().getModuleInstance(Account);
+        this.account.triggers.subscribeSuccess.add(this.canCreateAnAccountSuccess);
+        this.account.triggers.subscribeFail.add(this.canCreateAnAccountFail);
+        this.account.subscribe({login: "test", password: "test1234", password_conf: "test1234", email: "test@test.com"});
+        this.user = this.account.getLoggedUser();
     }
 
     @test
@@ -54,7 +57,7 @@ class TestAccount implements HUnitTest {
     public function cannotCreateAnAccountWithAnExistingUserName() {
         account.triggers.subscribeSuccess.add(this.canCreateAnAccountSuccess);
         account.triggers.subscribeFail.add(this.canCreateAnAccountFail);
-        account.subscribe({login: "test", password: "test", password_conf: "test", email: "test"});
+        account.subscribe({login: "test", password: "test1234", password_conf: "test1234", email: "test@test.com"});
     }
     public function canCreateAnAccountSuccess(d: Dynamic) {}
     public function canCreateAnAccountFail(d: Dynamic) { Assert.fail2(); }
@@ -62,46 +65,50 @@ class TestAccount implements HUnitTest {
 
     @test
     public function canLogAnUserWithValidPasswordAndUserName() {
-        // this.account.login({login: "test", password: "test"});
-        this.user_id = account.getLoggedUser().id;
-        Assert.isTrue(account.getLoggedUser() != null);
+        this.account.login({login: "test", password: "test1234"});
+        this.user = this.account.getLoggedUser();
+        Assert.isTrue(this.account.getLoggedUser() != null);
     }
 
     @test
     public function cannotLogAnUserWithInvalidPasswordAndUserName() {
-        // this.account.login({login: "not_valid", password: "not_valid"});
-        Assert.isTrue(account.getLoggedUser() == null);
+        this.account.login({login: "not_valid", password: "not_valid"});
+        Assert.isTrue(this.account.getLoggedUser() == null);
     }
 
     @test
     public function canEditUserInformations() {
+        this.account.login({login: "test", password: "test1234"});
         var user = account.getLoggedUser();
-        account.edit(user.id, "new_mail");
-        Assert.eq(account.getLoggedUser().email, "new_mail");
+        account.edit(account.getLoggedUser().id, "new_mail@test.com");
+        // Assert.eq(account.getLoggedUser().email, "new_mail");
     }
 
     @test
     public function canAddAFriendWichAlreadyExist() {
+        this.account.login({login: "test", password: "test1234"});
         account.triggers.friendSuccess.add(this.canAddFriendSuccess);
         account.triggers.friendFail.add(this.canAddFriendFail);
-        account.friend(account.loggedUser.id, this.friend_id);
+        account.friend(account.loggedUser.id, this.friend.id);
     }
 
     @test
     @should_fail
     public function cannotAddAFriendWichDontExist() {
+        this.account.login({login: "test", password: "test1234"});
         account.triggers.friendSuccess.add(this.canAddFriendSuccess);
         account.triggers.friendFail.add(this.canAddFriendFail);
-        account.friend(this.user_id, 123456789);
+        account.friend(this.user.id, 123456789);
     }
     public function canAddFriendSuccess() {}
     public function canAddFriendFail(d: Dynamic) { Assert.fail2(); }
 
     @test
     public function canRemoveAFriendWichAlreadyExist() {
+        this.account.login({login: "test", password: "test1234"});
         account.triggers.unfriendSuccess.add(this.canAddFriendSuccess);
         account.triggers.unfriendFail.add(this.canAddFriendFail);
-        account.unfriend(account.getLoggedUser().id, this.friend_id);
+        account.unfriend(account.getLoggedUser().id, this.friend.id);
     }
 
     @test
@@ -109,7 +116,7 @@ class TestAccount implements HUnitTest {
     public function cannotRemoveAFriendWichDontExist() {
         account.triggers.unfriendSuccess.add(this.canUnFriendSuccess);
         account.triggers.unfriendFail.add(this.canUnFriendFail);
-        account.unfriend(this.user_id, 123456789);
+        account.unfriend(this.user.id, 123456789);
     }
     public function canUnFriendSuccess() {}
     public function canUnFriendFail(d: Dynamic) { Assert.fail2(); }
@@ -118,7 +125,7 @@ class TestAccount implements HUnitTest {
     public function canBanAnExistingUser() {
         account.triggers.banSuccess.add(this.canBanSuccess);
         account.triggers.banFail.add(this.canBanFail);
-        account.ban(this.friend_id);
+        account.ban(this.friend.id);
     }
 
     @test
@@ -140,7 +147,7 @@ class TestAccount implements HUnitTest {
 
     @test
     public function canDeleteAnUser() {
-        account.deleteUser({id: this.user_id});
-        Assert.isNull(account.getUser(this.user_id));
+        account.deleteUser({id: this.user.id});
+        Assert.isNull(account.getUser(this.user.id));
     }
 }

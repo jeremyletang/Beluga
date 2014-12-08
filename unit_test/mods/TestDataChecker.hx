@@ -3,7 +3,7 @@ package mods;
 import hunit.Assert;
 import hunit.HUnitTest;
 
-import beluga.core.form.DataChecker;
+import beluga.api.form.DataChecker;
 
 class TestDataChecker implements HUnitTest {
     public function new(){}

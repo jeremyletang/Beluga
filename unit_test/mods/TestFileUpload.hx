@@ -4,7 +4,7 @@ import hunit.Assert;
 import hunit.AssertException;
 import hunit.HUnitTest;
 
-import beluga.core.Beluga;
+import beluga.Beluga;
 import beluga.module.fileupload.Fileupload;
 import beluga.module.fileupload.FileUploadErrorKind;
 
