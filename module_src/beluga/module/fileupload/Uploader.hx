@@ -27,6 +27,7 @@ class Uploader {
     public var is_valid: Bool;
     public var file_path: String = "";
     public var id: Int = 0;
+    public var save: Bool = false;
 
     public function isValidFileExtension(filename: String): Bool {
         var splitString = filename.split(".");
@@ -40,13 +41,15 @@ class Uploader {
     }
 
     public function insertDataInDb() {
-
-        var file = new beluga.module.fileupload.model.File();
-        file.path = "upload/" + user + "/" + filename;
-        file.size = 0;
-        file.name = this.filename;
-        file.owner_id = this.id;
-        file.insert();
+        if (save == false ) {
+            save = true;
+            var file = new beluga.module.fileupload.model.File();
+            file.path = "upload/" + user + "/" + filename;
+            file.size = 0;
+            file.name = this.filename;
+            file.owner_id = this.id;
+            file.insert();
+        }
     }
 
     public function new(user: String, id: Int)
